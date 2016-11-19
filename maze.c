@@ -111,12 +111,41 @@ void pop(int openset[][3], int n, int *x, int *y, SearchState *st)
     }
 }
 
+// consecutive swaps could be optimized
 void siftdown(int openset[][], int start, int end)
 {
-    
+    int child = 2 * start + 1, temp, i;
+    while (child < end) {
+        // set child to index of smaller child
+        if (child + 1 < end && openset[child + 1][2] < openset[child][2])
+            ++child;
+        
+        // if child smaller than start, swap start with child
+        if (openset[start][2] <= openset[child][2])
+            break;
+        for (i = 0; i < 3; ++i) {
+            temp = openset[start][i];
+            openset[start][i] = openset[child][i];
+            openset[child][i] = temp;
+        }
+        
+        start = child;
+        child = 2 * child + 1;
+    }
 }
 
 void siftup(int openset[][], int start, int end)
 {
-    
+    int parent, i, temp;
+    while (end > start) {
+        parent = (end - 1) >> 1;
+        if (openset[parent][2] <= openset[end][2])
+            break;
+        for (i = 0; i < 3; ++i) {
+            temp = openset[parent][i];
+            openset[parent][i] = openset[end][i];
+            openset[end][i] = temp;
+        }
+        end = parent;
+    }
 }

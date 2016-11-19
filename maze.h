@@ -9,9 +9,10 @@
 // TODO perhaps make the iterative landmark heuristic a separate boolean value
 
 /* Depth-first, breadth-first, uniform-cost and A* search, the latter using four different heuristics:
-   - Euclidean distance
-   - Manhattan distance
-   - Landmark heuristic, measured once in the beginning */
+ * - Euclidean distance
+ * - Manhattan distance
+ * - Landmark heuristic, measured once in the beginning 
+ */
 enum {DFS, BFS, UCS, ASE, ASM, ASL};
 
 typedef char Maze[SIZE][SIZE];
