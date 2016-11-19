@@ -20,6 +20,7 @@ void init_state(SearchState *st, int k)
 void update_state(SearchState *st, int dists[SIZE][SIZE])
 {
     int i, j, a;
+
     if (st->iter) {
         for (i = 0; i < SIZE; ++i) {
             for (j = 0; j < SIZE; ++j) {
@@ -47,6 +48,46 @@ int heur(SearchState *st, int x, int y)
     if (st->iter && res < st->heur[x][y])
         res = st->heur[x][y];
     return res;
+}
+
+void push(int openset[][3], int n, int x, int y, int dist, SearchState *st)
+{
+    // if DFS, openset is a stack, so push and pop from end
+    // if BFS, openset is a queue, so push at end and pop from start
+    // else, openset is a priority queue with priority dist + heur(st, x, y)
+    
+    openset[n][0] = x;
+    openset[n][1] = y;
+    openset[n][2] = dist + heur(st, x, y);
+    
+    if (st->type > BFS)
+        siftdown(openset, 0, n + 1);
+}
+
+void pop(int openset[][3], int n, int *x, int *y, SearchState *st)
+{
+    if (n <= 0) return;
+    
+    if (st->type == DFS) {
+        // pop from end
+        *x = openset[n-1][0];
+        *y = openset[n-1][1];
+        return;
+    }
+    
+    *x = openset[0][0];
+    *y = openset[0][1];
+    
+    if (st->type == BFS) {
+        for (int i = 0; i < n - 1; ++i) {
+            openset[i][0] = openset[i+1][0];
+            openset[i][1] = openset[i+1][1];
+        }
+    } else if (n > 1) {
+        openset[0][0] = openset[n-1][0];
+        openset[0][1] = openset[n-1][1];
+        siftup(openset, 0, n - 1);
+    }
 }
 
 void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m)

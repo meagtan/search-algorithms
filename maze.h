@@ -33,6 +33,7 @@ void update_state(SearchState *st, int dists[SIZE][SIZE]);
 int heur(SearchState *st, int x, int y);
 
 // push also counts in heuristic for A*
+// n is size, > 0 for pop
 void push(int openset[][3], int n, int x, int y, int dist, SearchState *st);
 void pop(int openset[][3], int n, int *x, int *y, SearchState *st);
 
