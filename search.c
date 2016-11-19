@@ -10,23 +10,23 @@ int *testsearch(int gennum, int testnum)
     if (tests == NULL) return NULL;
     
     Maze m;
-    SearchState st[SRCNUM];
+    SearchState st;
     int i, j, k, x0, y0;
     
     for (i = 0; i < gennum; ++i) {
         init_maze(m);
         
-        for (k = 0; k < SRCNUM; ++k)
-            init_state(st + k, k);
+        for (k = 0; k < SRCNUM; ++k) {
+            init_state(&st, k);
         
-        for (j = 0; j < testnum; ++j) {
-            // define the RNG later
-            // TODO verify that x0 and y0 are not obstacles in m
-            x0 = random(SIZE);
-            y0 = random(SIZE);
-            
-            for (k = 0; k < SRCNUM; ++k)
-                ELEM(i, j, k) = search(m, st + k, x0, y0);
+            for (j = 0; j < testnum; ++j) {
+                // define the RNG later
+                // TODO verify that x0 and y0 are not obstacles in m
+                x0 = random(SIZE);
+                y0 = random(SIZE);
+                
+                ELEM(i, j, k) = search(m, &st, x0, y0);
+            }
         }
     }
     
@@ -71,5 +71,5 @@ int search(Maze m, SearchState *st, int x, int y)
         }
     }
     
-    return NONE;
+    return -res; // negative means no solution found
 }

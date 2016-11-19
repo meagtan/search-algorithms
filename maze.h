@@ -14,14 +14,14 @@
  * - Landmark heuristic, measured once in the beginning 
  */
 enum {DFS, BFS, UCS, ASE, ASM, ASL};
-
 typedef char Maze[SIZE][SIZE];
-
 typedef struct {
     int type;
-    int iter; // wheter to use iterative landmark optimization
+    int iter; // whether to use iterative landmark optimization
     int heur[SIZE][SIZE][2];
 } SearchState;
+
+const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};
 
 // conduct search with given number of generations and tests for each generation
 int *testsearch(int gennum, int testnum);

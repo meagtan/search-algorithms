@@ -5,9 +5,37 @@ void siftup(int[][], int, int);
 
 void init_maze(Maze m)
 {
-    memset(m, 0, sizeof(m)); // clear m
+    memset(m, 1, sizeof(m)); // clear m and set each cell to be an obstacle
     
-    // TODO generate random maze on m, representing obstacles by 1
+    // generate random maze on m, modification of depth-first search
+    int stack[SIZE*SIZE][3], visited[SIZE][SIZE] = {0}, n = 0, x, y, ns[4][2], nc, i, k;
+    SearchState st;
+    
+    init_state(&st, DFS);
+    push(stack, n++, 0, 0, 0, &st);
+    
+    x = y = 0;
+    visited[x][y] = 1;
+    while (n) {
+        // x = stack[n-1][0];
+        // y = stack[n-1][1];
+        
+        // look for unvisited neighbors
+        for (nc = 0, i = 0; i < 4; ++i) {
+            // TODO also add a disjunct that is true with frequency p, in order to create loops sporadically
+            if (!visited[x + dir[i][0]][y + dir[i][1]]) {
+                ns[nc][0] = x + dir[i][0];
+                ns[nc][1] = y + dir[i][1];
+                ++nc;
+            }
+        }
+        
+        if (nc) {
+            // choose neighbor at random
+            k = random(nc);
+            push(stack, n++, ns[k][0], ns[k][1], 0, &st);
+        }
+        // TODO
 }
 
 void init_state(SearchState *st, int k)
@@ -55,7 +83,6 @@ int heur(SearchState *st, int x, int y)
 
 void get_neighbors(int ns[][], int *nc, int x, int y, Maze m)
 {
-    static const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};
     int i;
     
     *nc = 0;
