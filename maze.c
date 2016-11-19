@@ -7,6 +7,16 @@ void init_maze(Maze m)
     // TODO generate random maze on m, representing obstacles by 1
 }
 
+void init_state(SearchState *st, int k)
+{
+    st->type = k >= 6 ? k - 3 : k;
+    st->iter = k >= 6;
+    // for other types the heuristic is either unused or calculated directly
+    if (type == ASL) {
+        // TODO calculate heuristic for each point using Dijkstra's algorithm
+    }
+}
+
 void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m)
 {
     static const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};

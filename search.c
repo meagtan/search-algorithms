@@ -21,7 +21,7 @@ int *testsearch(int gennum, int testnum)
         
         for (j = 0; j < testnum; ++j) {
             // define the RNG later
-            // verify that x0 and y0 are not obstacles in m
+            // TODO verify that x0 and y0 are not obstacles in m
             x0 = random(SIZE);
             y0 = random(SIZE);
             
