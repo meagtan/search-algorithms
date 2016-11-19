@@ -1,5 +1,8 @@
 #include "maze.h"
 
+void siftdown(int[][], int, int);
+void siftup(int[][], int, int);
+
 void init_maze(Maze m)
 {
     memset(m, 0, sizeof(m)); // clear m
@@ -17,7 +20,7 @@ void init_state(SearchState *st, int k)
     }
 }
 
-void update_state(SearchState *st, int dists[SIZE][SIZE])
+void update_state(SearchState *st, int dists[][])
 {
     int i, j, a;
 
@@ -50,7 +53,25 @@ int heur(SearchState *st, int x, int y)
     return res;
 }
 
-void push(int openset[][3], int n, int x, int y, int dist, SearchState *st)
+void get_neighbors(int ns[][], int *nc, int x, int y, Maze m)
+{
+    static const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};
+    int i;
+    
+    *nc = 0;
+    for (i = 0; i < 4; ++i) {
+        ns[*nc][0] = x + dirs[i][0];
+        ns[*nc][1] = y + dirs[i][1];
+        
+        // boundary and availability check
+        if (ns[*nc][0] >= 0 && ns[*nc][1] >= 0 &&
+            ns[*nc][0] < SIZE && ns[*nc][1] < SIZE &&
+            !m[ns[*nc][0]][ns[*nc][1]])
+            ++*nc;
+    }
+}
+
+void push(int openset[][], int n, int x, int y, int dist, SearchState *st)
 {
     // if DFS, openset is a stack, so push and pop from end
     // if BFS, openset is a queue, so push at end and pop from start
@@ -61,7 +82,7 @@ void push(int openset[][3], int n, int x, int y, int dist, SearchState *st)
     openset[n][2] = dist + heur(st, x, y);
     
     if (st->type > BFS)
-        siftdown(openset, 0, n + 1);
+        siftup(openset, 0, n + 1);
 }
 
 void pop(int openset[][3], int n, int *x, int *y, SearchState *st)
@@ -86,24 +107,16 @@ void pop(int openset[][3], int n, int *x, int *y, SearchState *st)
     } else if (n > 1) {
         openset[0][0] = openset[n-1][0];
         openset[0][1] = openset[n-1][1];
-        siftup(openset, 0, n - 1);
+        siftdown(openset, 0, n - 1);
     }
 }
 
-void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m)
+void siftdown(int openset[][], int start, int end)
 {
-    static const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};
-    int i;
     
-    *nc = 0;
-    for (i = 0; i < 4; ++i) {
-        ns[*nc][0] = x + dirs[i][0];
-        ns[*nc][1] = y + dirs[i][1];
-        
-        // boundary and availability check
-        if (ns[*nc][0] >= 0 && ns[*nc][1] >= 0 &&
-            ns[*nc][0] < SIZE && ns[*nc][1] < SIZE &&
-            !m[ns[*nc][0]][ns[*nc][1]])
-            ++*nc;
-    }
+}
+
+void siftup(int openset[][], int start, int end)
+{
+    
 }

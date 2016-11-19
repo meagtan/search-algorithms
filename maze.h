@@ -34,10 +34,10 @@ int heur(SearchState *st, int x, int y);
 
 // push also counts in heuristic for A*
 // n is size, > 0 for pop
-void push(int openset[][3], int n, int x, int y, int dist, SearchState *st);
-void pop(int openset[][3], int n, int *x, int *y, SearchState *st);
+void push(int openset[][], int n, int x, int y, int dist, SearchState *st);
+void pop(int openset[][], int n, int *x, int *y, SearchState *st);
 
 // return array of neighbors
-void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m);
+void get_neighbors(int ns[][], int *nc, int x, int y, Maze m);
 
 int random(int max);
