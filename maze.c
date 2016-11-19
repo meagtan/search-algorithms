@@ -17,6 +17,22 @@ void init_state(SearchState *st, int k)
     }
 }
 
+void update_state(SearchState *st, int dists[SIZE][SIZE])
+{
+    int i, j, a;
+    if (st->iter) {
+        for (i = 0; i < SIZE; ++i) {
+            for (j = 0; j < SIZE; ++j) {
+                if (dists[i][j] != NONE) {
+                    a = dists[0][0] - dists[i][j];
+                    if (a > heur[i][j])
+                        heur[i][j] = a;
+                }
+            }
+        }
+    }
+}
+
 void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m)
 {
     static const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};

@@ -40,8 +40,8 @@ int search(Maze m, SearchState *st, int x, int y)
     int openset[SIZE * SIZE][3] = {0}, n = 0, // openset and index
         preds[SIZE][SIZE][2] = {0}, // needn't assign to NONE as (0,0) will never be a predecessor to some other point
         dists[SIZE][SIZE] = {NONE}, 
-        res = 0, i, newdist,
-        ns[4][2], nc; // neighbors and count
+        ns[4][2], nc, // neighbors and count
+        res = 0, i, newdist;
     
     push(openset, n++, x, y, 0, st);
     dists[x][y] = 0;
