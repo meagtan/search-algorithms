@@ -1,8 +1,9 @@
 #include <string.h> // memset
 #include <stdlib.h> // malloc, free
+#include <math.h> // sqrt
 
 #define SIZE 16
-#define SRCNUM 9 // 9 search strategies, the last 3 employing iterative landmark optimizations
+#define SRCNUM 10 // 10 search strategies, the last 4 employing iterative landmark optimizations
 #define NONE -1
 
 // TODO perhaps make the iterative landmark heuristic a separate boolean value
@@ -29,10 +30,11 @@ int search(Maze m, SearchState *st, int x, int y);
 void init_maze(Maze m);
 void init_state(SearchState *st, int k);
 void update_state(SearchState *st, int dists[SIZE][SIZE]);
+int heur(SearchState *st, int x, int y);
 
 // push also counts in heuristic for A*
 void push(int openset[][3], int n, int x, int y, int dist, SearchState *st);
-void pop(int openset[][3], int n, int *x, int *y, int dist, SearchState *st);
+void pop(int openset[][3], int n, int *x, int *y, SearchState *st);
 
 // return array of neighbors
 void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m);

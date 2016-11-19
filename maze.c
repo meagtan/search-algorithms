@@ -9,7 +9,7 @@ void init_maze(Maze m)
 
 void init_state(SearchState *st, int k)
 {
-    st->type = k >= 6 ? k - 3 : k;
+    st->type = k >= 6 ? k - 4 : k;
     st->iter = k >= 6;
     // for other types the heuristic is either unused or calculated directly
     if (type == ASL) {
@@ -31,6 +31,22 @@ void update_state(SearchState *st, int dists[SIZE][SIZE])
             }
         }
     }
+}
+
+int heur(SearchState *st, int x, int y)
+{
+    if (st->type < UCS) return 0;
+    
+    int res;
+    switch (st->type) {
+        case UCS: res = 0; break;
+        case ASE: res = sqrt(x * x + y * y); break;
+        case ASM: res = x + y; break;
+        case ASL: res = st->heur[x][y]; break; // can just return it too
+    }
+    if (st->iter && res < st->heur[x][y])
+        res = st->heur[x][y];
+    return res;
 }
 
 void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m)
