@@ -20,11 +20,7 @@ int *testsearch(int gennum, int testnum)
             init_state(&st, k, m);
         
             for (j = 0; j < testnum; ++j) {
-                // define the RNG later
-                // TODO verify that x0 and y0 are not obstacles in m
-                x0 = random(SIZE);
-                y0 = random(SIZE);
-                
+                rand_point(m, &x0, &y0);
                 ELEM(i, j, k) = search(m, &st, x0, y0, dists);
             }
         }

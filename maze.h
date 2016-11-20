@@ -2,9 +2,11 @@
 #include <stdlib.h> // malloc, free
 #include <math.h> // sqrt
 
-#define SIZE 16
+#define SIZE 32
 #define SRCNUM 10 // 10 search strategies, the last 4 employing iterative landmark optimizations
 #define NONE -1
+#define LOOP_OFFSET 100 // add loop to maze with frequency between 1/LOOP_OFFSET and 1/(LOOP_OFFSET + LOOP_RANGE)
+#define LOOP_RANGE  25
 
 // TODO perhaps make the iterative landmark heuristic a separate boolean value
 
@@ -32,6 +34,9 @@ void init_maze(Maze m);
 void init_state(SearchState *st, int k, Maze m);
 void update_state(SearchState *st, int dists[SIZE][SIZE]);
 int heur(SearchState *st, int x, int y);
+
+// choose random point on maze
+void rand_point(Maze m, int *x, int *y);
 
 // push also counts in heuristic for A*
 // n is size, > 0 for pop
