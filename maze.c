@@ -34,8 +34,13 @@ void init_maze(Maze m)
             // choose neighbor at random
             k = random(nc);
             push(stack, n++, ns[k][0], ns[k][1], 0, &st);
+            // mark it empty and visited
+            m[ns[k][0]][ns[k][1]] = 0;
+            visited[ns[k][0]][ns[k][1]] = 1;
+        } else {
+            pop(stack, n--, &x, &y, &st);
         }
-        // TODO
+    }
 }
 
 void init_state(SearchState *st, int k)
