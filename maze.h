@@ -25,11 +25,11 @@ const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};
 
 // conduct search with given number of generations and tests for each generation
 int *testsearch(int gennum, int testnum);
-// returns size of queue
-int search(Maze m, SearchState *st, int x, int y);
+// returns size of queue, modifies dists
+int search(Maze m, SearchState *st, int x, int y, int dists[SIZE][SIZE]);
 
 void init_maze(Maze m);
-void init_state(SearchState *st, int k);
+void init_state(SearchState *st, int k, Maze m);
 void update_state(SearchState *st, int dists[SIZE][SIZE]);
 int heur(SearchState *st, int x, int y);
 
@@ -39,6 +39,6 @@ void push(int openset[][], int n, int x, int y, int dist, SearchState *st);
 void pop(int openset[][], int n, int *x, int *y, SearchState *st);
 
 // return array of neighbors
-void get_neighbors(int ns[][], int *nc, int x, int y, Maze m);
+void get_neighbors(int ns[][], int *nc, int x, int y, Maze m); // x and y assumed to be available, as with search
 
 int random(int max);

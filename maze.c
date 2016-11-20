@@ -8,7 +8,7 @@ void init_maze(Maze m)
     int stack[SIZE*SIZE][3], visited[SIZE][SIZE] = {0}, n = 0, x, y, ns[4][2], nc, i, k;
     SearchState st;
     
-    init_state(&st, DFS);
+    init_state(&st, DFS, NULL); // do not need to pass m
     push(stack, n++, 0, 0, 0, &st);
     
     x = y = 0;
@@ -40,13 +40,27 @@ void init_maze(Maze m)
     }
 }
 
-void init_state(SearchState *st, int k)
+void init_state(SearchState *st, int k, Maze m)
 {
     st->type = k >= 6 ? k - 4 : k;
     st->iter = k >= 6;
     // for other types the heuristic is either unused or calculated directly
     if (type == ASL) {
         // TODO calculate heuristic for each point using Dijkstra's algorithm
+        SearchState s1;
+        int x, y, i, j, dists[SIZE][SIZE];
+        
+        init_state(&s1, UCS, NULL); // needn't pass m for UCS
+        // TODO choose x and y
+        search(m, &s1, x, y, dists); // TODO check whether result is negative
+        
+        for (i = 0; i < SIZE; ++i) {
+            for (j = 0; j < SIZE; ++j) {
+                if (dists[i][j] != NONE && dists[x][y] > dists[i][j]) {
+                    st->heur[i][j] = dists[x][y] - dists[i][j];
+                }
+            }
+        }
     }
 }
 
