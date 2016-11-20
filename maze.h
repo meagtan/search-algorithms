@@ -1,6 +1,7 @@
 #include <string.h> // memset
-#include <stdlib.h> // malloc, free
+#include <stdlib.h> // malloc, free, rand, srand
 #include <math.h> // sqrt
+#include <time.h> // time, for srand
 
 #define SIZE 32
 #define SRCNUM 10 // 10 search strategies, the last 4 employing iterative landmark optimizations

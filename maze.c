@@ -126,3 +126,9 @@ void get_neighbors(int ns[][], int *nc, int x, int y, Maze m)
             ++*nc;
     }
 }
+
+int random(int max)
+{
+    static int _a = (srand(time(NULL)), 0); // seed rand once
+    return rand() % max; // may not be uniform
+}
