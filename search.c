@@ -35,6 +35,7 @@ int search(Maze m, SearchState *st, int x, int y, int dists[SIZE][SIZE])
     // points represented as arrays of size 2, the 3rd element in openset is priority
     int openset[SIZE * SIZE][3] = {0}, n = 0, // openset and index
         preds[SIZE][SIZE][2] = {0}, // needn't assign to NONE as (0,0) will never be a predecessor to some other point
+        visited[SIZE][SIZE] = {0},
         ns[4][2], nc, // neighbors and count
         res = 0, i, newdist;
     
@@ -49,8 +50,9 @@ int search(Maze m, SearchState *st, int x, int y, int dists[SIZE][SIZE])
         pop(openset, n--, &x, &y, st);
         
         // already visited
-        if (preds[x][y][0] || preds[x][y][1])
+        if (visited[x][y])
             continue;
+        visited[x][y] = 1;
         
         // found solution
         if (!x && !y) {
