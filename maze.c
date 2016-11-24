@@ -53,7 +53,7 @@ void init_state(SearchState *st, int k, Maze m)
     if (type == ASL) {
         // calculate heuristic for each point using Dijkstra's algorithm
         SearchState s1;
-        int x, y, i, j, dists[SIZE][SIZE];
+        int x, y, i, j, dists[SIZE][SIZE], heur;
         
         init_state(&s1, UCS, NULL); // needn't pass m for UCS
         rand_point(m, &x, &y);
@@ -61,8 +61,9 @@ void init_state(SearchState *st, int k, Maze m)
         
         for (i = 0; i < SIZE; ++i) {
             for (j = 0; j < SIZE; ++j) {
-                if (dists[i][j] != NONE && dists[0][0] > dists[i][j]) {
-                    st->heur[i][j] = dists[0][0] - dists[i][j];
+                if (dists[i][j] != NONE) {
+                    heur = dists[0][0] - dists[i][j];
+                    st->heur[i][j] = heur < 0 ? -heur : heur;
                 }
             }
         }
