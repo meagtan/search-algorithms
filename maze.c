@@ -79,6 +79,7 @@ void update_state(SearchState *st, int dists[][])
             for (j = 0; j < SIZE; ++j) {
                 if (dists[i][j] != NONE) {
                     a = dists[0][0] - dists[i][j];
+                    if (a < 0) a = -a;
                     if (a > st->heur[i][j])
                         st->heur[i][j] = a;
                 }
