@@ -1,43 +1,67 @@
 #include "maze.h"
+#include <math.h> // sqrt
+#include <string.h> // memset
+#include <stdlib.h> // malloc, free, rand, srand
+#include <time.h> // time, for srand
+#include <stdio.h>
 
-void init_maze(Maze m)
+#define alloc_arr(arr, typ, row, col, val) do { \
+arr = malloc((row) * sizeof(typ *)); \
+    for (int i = 0; i < (row); ++i) { \
+        (arr)[i] = malloc((col) * sizeof(typ)); \
+        for (int j = 0; j < (col); ++j) \
+            (arr)[i][j] = (val); \
+    } \
+} while(0)
+
+static const int dirs[4][2] = {0, 1, 1, 0, 0, -1, -1, 0};
+
+// TODO problem: visits every point
+void init_maze(Maze *m)
 {
-    memset(m, 1, sizeof(m)); // clear m and set each cell to be an obstacle
-    
     // generate random maze on m, modification of depth-first search
-    int stack[SIZE*SIZE][3], n = 0,
-        visited[SIZE][SIZE] = {0},
-        x, y, 
+    int **stack, n = 0,
+        **visited,
+        x, y, x1, y1,
         ns[4][2], nc, 
-        c = LOOP_OFFSET + random(LOOP_RANGE), i, k;
+        c = LOOP_OFFSET + rand_num(LOOP_RANGE), i, k;
     SearchState st;
     
-    init_state(&st, DFS, NULL); // do not need to pass m
+    alloc_arr(*m, char, SIZE, SIZE, 1); // every cell initially obstacle
+    alloc_arr(stack, int, SIZE * SIZE, 3, 0);
+    alloc_arr(visited, int, SIZE, SIZE, 0);
+    
+    init_state(&st, DFS, *m);
     push(stack, n++, 0, 0, 0, &st);
     
     x = y = 0;
     visited[x][y] = 1;
-    m[x][y] = 0;
+    (*m)[x][y] = 0;
     while (n) {
         // x = stack[n-1][0];
         // y = stack[n-1][1];
         
         // look for unvisited neighbors
+        // TODO perhaps check for 2-neighbors, then clear 1-neighbors
         for (nc = 0, i = 0; i < 4; ++i) {
-            if (!visited[x + dir[i][0]][y + dir[i][1]] || 
-                (!(--c) && c = LOOP_OFFSET + random(LOOP_RANGE))) { // create loops every c checks
-                ns[nc][0] = x + dir[i][0];
-                ns[nc][1] = y + dir[i][1];
+            x1 = x + dirs[i][0];
+            y1 = y + dirs[i][1];
+            if (x1 >= 0 && x1 < SIZE &&
+                y1 >= 0 && y1 < SIZE &&
+                (!visited[x1][y1] || 
+                (!(--c) && (c = LOOP_OFFSET + rand_num(LOOP_RANGE))))) { // create loops every c checks
+                ns[nc][0] = x1;
+                ns[nc][1] = y1;
                 ++nc;
             }
         }
         
         if (nc) {
             // choose neighbor at random
-            k = random(nc);
+            k = rand_num(nc);
             push(stack, n++, x = ns[k][0], y = ns[k][1], 0, &st);
             // mark it empty and visited
-            m[x][y] = 0;
+            (*m)[x][y] = 0;
             visited[x][y] = 1;
         } else {
             pop(stack, n--, &x, &y, &st);
@@ -50,12 +74,14 @@ void init_state(SearchState *st, int k, Maze m)
     st->type = k >= 6 ? k - 4 : k;
     st->iter = k >= 6;
     // for other types the heuristic is either unused or calculated directly
-    if (type == ASL) {
+    alloc_arr(st->heur, int, SIZE, SIZE, 0);
+    if (st->type == ASL) {
         // calculate heuristic for each point using Dijkstra's algorithm
         SearchState s1;
-        int x, y, i, j, dists[SIZE][SIZE], heur;
+        int x, y, i, j, **dists, heur;
+        alloc_arr(dists, int, SIZE, SIZE, -1);
         
-        init_state(&s1, UCS, NULL); // needn't pass m for UCS
+        init_state(&s1, UCS, m);
         rand_point(m, &x, &y);
         search(m, &s1, x, y, dists); // needn't check whether result is negative, maze contains spanning tree
         
@@ -70,7 +96,7 @@ void init_state(SearchState *st, int k, Maze m)
     }
 }
 
-void update_state(SearchState *st, int dists[][])
+void update_state(SearchState *st, int **dists)
 {
     int i, j, a;
 
@@ -79,7 +105,6 @@ void update_state(SearchState *st, int dists[][])
             for (j = 0; j < SIZE; ++j) {
                 if (dists[i][j] != NONE) {
                     a = dists[0][0] - dists[i][j];
-                    if (a < 0) a = -a;
                     if (a > st->heur[i][j])
                         st->heur[i][j] = a;
                 }
@@ -107,12 +132,12 @@ int heur(SearchState *st, int x, int y)
 void rand_point(Maze m, int *x, int *y)
 {
     do {
-        *x = random(SIZE);
-        *y = random(SIZE);
+        *x = rand_num(SIZE);
+        *y = rand_num(SIZE);
     } while (m[*x][*y] == NONE);
 }
 
-void get_neighbors(int ns[][], int *nc, int x, int y, Maze m)
+void get_neighbors(int ns[4][2], int *nc, int x, int y, Maze m)
 {
     int i;
     
@@ -129,8 +154,13 @@ void get_neighbors(int ns[][], int *nc, int x, int y, Maze m)
     }
 }
 
-int random(int max)
+int rand_num(int max)
 {
-    static int _a = (srand(time(NULL)), 0); // seed rand once
+    // seed rand once
+    static int _a = 1;
+    if (_a) { 
+        srand(time(NULL)); 
+        _a = 0;
+    }
     return rand() % max; // may not be uniform
 }
