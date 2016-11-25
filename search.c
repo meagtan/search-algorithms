@@ -1,6 +1,15 @@
 #include "maze.h"
+#include <stdlib.h>
 
 #define ELEM(a,b,c) tests[(a) * testnum * SRCNUM + (b) * SRCNUM + (c)]
+#define alloc_arr(arr, typ, row, col, val) do { \
+    arr = malloc((row) * sizeof(typ *)); \
+    for (int i = 0; i < (row); ++i) { \
+        (arr)[i] = malloc((col) * sizeof(typ)); \
+        for (int j = 0; j < (col); ++j) \
+            (arr)[i][j] = (val); \
+    } \
+} while (0)
 
 int *testsearch(int gennum, int testnum)
 {
@@ -11,10 +20,11 @@ int *testsearch(int gennum, int testnum)
     
     Maze m;
     SearchState st;
-    int i, j, k, x0, y0, dists[SIZE][SIZE];
+    int i, j, k, x0, y0, **dists;
+    alloc_arr(dists, int, SIZE, SIZE, NONE);
     
     for (i = 0; i < gennum; ++i) {
-        init_maze(m);
+        init_maze(&m);
         
         for (k = 0; k < SRCNUM; ++k) {
             init_state(&st, k, m);
@@ -30,14 +40,26 @@ int *testsearch(int gennum, int testnum)
 }
 
 // returns size of queue
-int search(Maze m, SearchState *st, int x, int y, int dists[SIZE][SIZE])
+int search(Maze m, SearchState *st, int x, int y, int **dists)
 {
+    // TODO allocate these arrays dynamically
     // points represented as arrays of size 2, the 3rd element in openset is priority
-    int openset[SIZE * SIZE][3] = {0}, n = 0, // openset and index
-        preds[SIZE][SIZE][2] = {0}, // needn't assign to NONE as (0,0) will never be a predecessor to some other point
-        visited[SIZE][SIZE] = {0},
+    int **openset, n = 0, // openset and index
+        ***preds, // needn't assign to NONE as (0,0) will never be a predecessor to some other point
+        **visited,
         ns[4][2], nc, // neighbors and count
         res = 0, i, newdist;
+    alloc_arr(openset, int, SIZE * SIZE, 3, 0);
+    alloc_arr(visited, int, SIZE, SIZE, 0);
+    preds = malloc(SIZE * sizeof(int **));
+    for (int i = 0; i < SIZE; ++i) {
+        preds[i] = malloc(SIZE * sizeof(int *));
+        for (int j = 0; j < SIZE; ++j) {
+            preds[i][j] = malloc(3 * sizeof(int));
+            for (int k = 0; k < 3; ++k)
+                preds[i][j][k] = 0;
+        }
+    } \
     
     for (i = 0; i < SIZE * SIZE; ++i)
         dists[i / SIZE][i % SIZE] = NONE;
@@ -57,6 +79,19 @@ int search(Maze m, SearchState *st, int x, int y, int dists[SIZE][SIZE])
         // found solution
         if (!x && !y) {
             update_state(st, dists);
+            
+            for (int i = 0; i < SIZE; ++i) {
+                for (int j = 0; j < SIZE; ++j) {
+                    free(preds[i][j]);
+                    free(openset[i*j]);
+                }
+                free(preds[i]);
+                free(visited[i]);
+            }
+            free(openset);
+            free(preds);
+            free(visited);
+                
             return res;
         }
         
@@ -70,6 +105,18 @@ int search(Maze m, SearchState *st, int x, int y, int dists[SIZE][SIZE])
             }
         }
     }
+    
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            free(preds[i][j]);
+            free(openset[i*j]);
+        }
+        free(preds[i]);
+        free(visited[i]);
+    }
+    free(openset);
+    free(preds);
+    free(visited);
     
     return -res; // negative means no solution found
 }
