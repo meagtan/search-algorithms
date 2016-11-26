@@ -67,6 +67,21 @@ void init_maze(Maze *m)
             pop(stack, n--, &x, &y, &st);
         }
     }
+    for (int i = 0; i < SIZE; ++i) {
+        for (int j = 0; j < SIZE; ++j) {
+            free(stack[i * SIZE + j]);
+        }
+        free(visited[i]);
+    }
+    free(stack);
+    free(visited);
+}
+
+void free_maze(Maze m)
+{
+    for (int i = 0; i < SIZE; ++i)
+        free(m[i]);
+    free(m);
 }
 
 void init_state(SearchState *st, int k, Maze m)
@@ -79,9 +94,10 @@ void init_state(SearchState *st, int k, Maze m)
         // calculate heuristic for each point using Dijkstra's algorithm
         SearchState s1;
         int x, y, i, j, **dists, heur;
-        alloc_arr(dists, int, SIZE, SIZE, -1);
         
+        alloc_arr(dists, int, SIZE, SIZE, -1);
         init_state(&s1, UCS, m);
+        
         rand_point(m, &x, &y);
         search(m, &s1, x, y, dists); // needn't check whether result is negative, maze contains spanning tree
         
@@ -93,7 +109,19 @@ void init_state(SearchState *st, int k, Maze m)
                 }
             }
         }
+        
+        for (i = 0; i < SIZE; ++i)
+            free(dists[i]);
+        free(dists);
+        free_state(&s1);
     }
+}
+
+void free_state(SearchState *st)
+{
+    for (int i = 0; i < SIZE; ++i)
+        free(st->heur[i]);
+    free(st->heur);
 }
 
 void update_state(SearchState *st, int **dists)
