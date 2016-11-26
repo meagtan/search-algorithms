@@ -33,7 +33,10 @@ int *testsearch(int gennum, int testnum)
                 rand_point(m, &x0, &y0);
                 ELEM(i, j, k) = search(m, &st, x0, y0, dists);
             }
+            
+            free_state(&st);
         }
+        free_maze(m);
     }
     
     return tests;
@@ -83,7 +86,7 @@ int search(Maze m, SearchState *st, int x, int y, int **dists)
             for (int i = 0; i < SIZE; ++i) {
                 for (int j = 0; j < SIZE; ++j) {
                     free(preds[i][j]);
-                    free(openset[i*j]);
+                    free(openset[i * SIZE + j]);
                 }
                 free(preds[i]);
                 free(visited[i]);
@@ -109,7 +112,7 @@ int search(Maze m, SearchState *st, int x, int y, int **dists)
     for (int i = 0; i < SIZE; ++i) {
         for (int j = 0; j < SIZE; ++j) {
             free(preds[i][j]);
-            free(openset[i*j]);
+            free(openset[i * SIZE + j]);
         }
         free(preds[i]);
         free(visited[i]);
